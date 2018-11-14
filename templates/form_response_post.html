@@ -1,0 +1,70 @@
+{% extends "index.html" %}
+{% block top %}
+{{ super() }}
+{% set hostname = request.form.get('hostname') %}
+{% set hed = parse_headers(request.form.get('headers')) %}
+{% set aka_hed = parse_aka_headers(request.form.get('aka_headers')) %}
+{% if aka_hed %}
+{% set hed = merge_headers(hed,aka_hed) %}
+{% endif %}
+{% set data = parse_data(request.form.get('post_data')) %}
+<hr>
+<h3>Sent POST Request</h3>
+{% if hed %}
+{% if data %}
+{% set var = send_post(hostname,headers=hed,data=data) %}
+{% else %}
+<p style="color:red">No/Invalid Data - Sending without data.</p>
+{% set var = send_post(hostname,headers=hed) %}
+{% endif %}
+{% else %}
+<p style="color:red">No/Invalid Headers - Sending without additional headers.</p>
+{% if data %}
+{% set var = send_post(hostname, data=data) %}
+{% else %}
+<p style="color:red">No/Invalid Data - Sending without data.</p>
+{% set var = send_post(hostname) %}
+{% endif %}
+{% endif %}
+{% if var %}
+<h4>Hostname: {{ hostname }}</h4>
+<h4>Request Headers:</h4>
+<table style="width:100%">
+{% for key,value in var.request.headers.items() %}
+<tr>
+{% if hed and key in hed %}
+<td style="color:red">{{ key }}</td>
+<td style="color:red">{{ value }}</td>
+{% else %}
+<td>{{ key }}</td>
+<td>{{ value }}</td>
+{% endif %}
+</tr>
+{% endfor %}
+</table>
+<h4>Data</h4>
+<table style="width:40%">
+{% if data %}
+{% for key,value in data.items() %}
+<tr>
+<td>{{ key }}</td>
+<td>{{ value }}</td>
+</tr>
+{% endfor %}
+{% endif %}
+</table>
+<hr>
+<h4>Response Headers:</h4>
+<table style="width:100%">
+<tr><td><strong>Status Code</strong></td><td><strong>{{ var.status_code }} {{ var.reason }}</strong></td></tr>
+<tr><td><strong>Load Time</strong></td><td><strong>{{ var.elapsed.total_seconds() }}</strong></td></tr>
+{% for key in var.headers.items() %}
+<tr><td>{{ key[0] }}</td><td>{{ key[1] }}</td></tr>
+{% endfor %}
+</table>
+<h4>Returned Data:</h4>
+{{ var.text }}
+{% else %}
+<h1 style="color:red">INCORRECT/INVALID HOSTNAME. MUST BE "http(s)://..."</h1>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% block top %}
+<h1>Request Sender</h1>
+<p>Welcome. Insert your hostname and any headers you would like to send.</p>
+<form method="POST">
+	Hostname: <input type="text" name="hostname" value="{{ request.form['hostname'] }}" placeholder="http(s)://..." required><br><br>
+	Method: 
+	<input type="radio" name="method" value="GET" required {{ 'checked' if request.form.get('method') and request.form.get('method') == "GET" }}>GET
+	<input type="radio" name="method" value="POST" {{ 'checked' if request.form.get('method') and request.form.get('method') == "POST"}}>POST<br>
+	<p>Headers:</p> 
+	<textarea rows="8" cols="50" name="headers" placeholder="Name:Value, Name:Value,...">{{ request.form['headers'] }}</textarea><br>
+	<p>Akamai Headers:</p>
+	<textarea rows="8" cols="50" name="aka_headers" placeholder="akamai-x-cache-on, akamai-x-cache-remote-on,...">{{ request.form['aka_headers'] }}</textarea><br>
+	<p>Data (POST Only):</p>
+	<textarea rows="8" cols="50" name="post_data" placeholder="say=Hi&to=Mom&...">{{ request.form['post_data'] }}</textarea><br>
+	<br><input type="submit" value="Submit">
+</form>
+{% endblock %}
