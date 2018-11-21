@@ -1,4 +1,4 @@
-# IMPORTS
+# ALL IMPORTS
 from flask import Flask, render_template, request, make_response, jsonify
 from flask.json import jsonify 
 from werkzeug.debug import DebuggedApplication
@@ -24,7 +24,7 @@ def parse_headers(text):
   if len(text) == 0:
     return
   dictionary = {}
-  for t in text.strip().split(','):
+  for t in text.strip().split(';'):
     try: #oh my god
       new = t.strip().split(':')
     except IndexError:
